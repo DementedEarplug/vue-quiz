@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import BootsterapVue from 'bootstrap-vue'
+
 // bs css
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
