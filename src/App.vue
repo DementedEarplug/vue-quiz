@@ -1,13 +1,17 @@
 <template>
   <div id="app">
-    <Header/>
+    <Header
+    :numCorrect="correctAnswers"
+    :numTotal="totalAnswers"
+    />
     <b-container class="bv-example-row">
       <b-row>
         <b-col sm="6" offset="3">
           <QuestionBox 
             v-if="questions.length"
             :currentQuestion="questions[index]" 
-            :nextQuestion="next"/> 
+            :nextQuestion="next"
+            :increment="increment"/> 
         </b-col>
       </b-row>
     </b-container>
@@ -30,13 +34,22 @@ export default {
   data() {
     return {
       questions: [],
-      index: 0
+      index: 0,
+      correctAnswers:0,
+      totalAnswers:0,
     }
   },
   methods: {
     next(){
       this.index ++;
 
+    },
+    increment(isCorrect){
+      if(isCorrect)
+      {
+        this.correctAnswers ++
+      }
+      this.totalAnswers ++
     }
   },
   

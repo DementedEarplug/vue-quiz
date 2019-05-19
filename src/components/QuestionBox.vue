@@ -9,18 +9,25 @@
 
 			<hr class="my-4">
 
-			<b-list-group 
-			v-for="(choice, index) in choices" 
-			:key="index"
-			@click="selectedAnswer(index)">
+			<b-list-group>
 				
-				<b-list-group-item :class="[selectedChoice === index ? 'selected':'']">
+				<!-- Applies the css of a selected item -->
+				<b-list-group-item 
+				v-for="(choice, index) in shuffledChoices" 
+				:key="index"
+				@click.prevent="selectedAnswer(index)"
+				:class="answerClass(index)">
 					{{choice}}
 				</b-list-group-item>
 				
 			</b-list-group>
 
-			<b-button variant="primary" href="#">Submit</b-button>
+			<b-button variant="primary"
+			@click="submitAnswer"
+			:disabled="selectedChoice === null || answered">
+				Submit
+			</b-button>
+
 			<b-button @click="nextQuestion" variant="success" href="#">Next</b-button>
 		</b-jumbotron>
 	</div>  
@@ -33,20 +40,36 @@ export default {
 	props: {
 		currentQuestion: Object,
 		nextQuestion: Function,
+		increment: Function,
 	}, 
 
 	data() {
 		return {
 			selectedChoice: null,
-			shuffledChoices: []
+			shuffledChoices: [],
+			correctAnswer: null,
+			answered : false,
+		}
+	},
+
+	computed: {
+		choices(){
+			// make a list with the inccorrect answers and append the correct question
+			let choices = [...this.currentQuestion.incorrect_answers]
+			choices.push(this.currentQuestion.correct_answer)
+			return choices
 		}
 	},
 	
 	watch: {
-		// Has same name of current question pro, bu why?
-		currentQuestion(){
-			this.selectedChoice = null
-			this.shuffleChoices()
+		currentQuestion: {
+			immediate:true,
+			// Has same name of current question pro, but why?
+			handler(){
+				this.selectedChoice = null
+				this.shuffleChoices()
+				this.answered = false
+			}
 		}
 	},
 	
@@ -58,20 +81,30 @@ export default {
 		shuffleChoices(){
 			let choices = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer]
 			this.shuffledChoices = _.shuffle(choices)
-			console.log(this.shuffledChoices);
-			
+			this.correctAnswer = this.shuffledChoices.indexOf(this.currentQuestion.correct_answer)
+			return this.shuffledChoices
+		},
+		answerClass(index){
+			let answerClass = ''
+			if(!this.answered && this.selectedChoice === index){ answerClass ='selected'}
+			else if(this.answered && this.correctAnswer === index){answerClass = 'correct'}
+			else if(this.answered && this.selectedChoice===index && this.correctAnswer !== index) {answerClass = 'incorrect'}
+			return answerClass
+		},
+		submitAnswer(){
+			let isCorrect = false
 
+			if(this.selectedChoice === this.correctAnswer)
+			{
+				isCorrect = true
+			}
+			this.answered = true
+			this.increment(isCorrect)
 		},
 	},
-
-	computed: {
-		choices(){
-			// make a list with the inccorrect answers and append the correct question
-			let choices = [...this.currentQuestion.incorrect_answers]
-			choices.push(this.currentQuestion.correct_answer)
-			return choices
-		}
-	}
+	
+	
+	
 }
 </script>
 
@@ -100,7 +133,7 @@ export default {
 	}
 
 	.incorrect {
-		background: #cc3d3d
+		background: #f13838d2
 	}
 
 

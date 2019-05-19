@@ -5,14 +5,17 @@
             <b-nav-item disabled yellow>
                 <b> Quizzanator</b>
             </b-nav-item>
-            <b-nav-item disabled>Counter:</b-nav-item>
+            <b-nav-item disabled>Counter: {{numCorrect}}/{{numTotal}} </b-nav-item>
         </b-nav>
 </div>
 </template>
 
 <script>
 export default {
-
+    props : [
+        'numCorrect',
+        'numTotal'
+    ]
 }
 </script>
 
